@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Scraper</title>
+</head>
+
+<body>
+    <h1>Web Scraper</h1>
+    <form id="scrapeForm">
+        <label for="url">Enter URL:</label>
+        <input type="url" id="url" name="url" required>
+        <button type="submit">Scrape Data</button>
+    </form>
+    <div id="result">Result : </div>
+
+    <script>
+        function isValidUrl(string) {
+            try {
+                new URL(string);
+                return true;
+            } catch (_) {
+                return false;
+            }
+        }
+
+        document.getElementById('scrapeForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            var url = document.getElementById('url').value;
+
+            try {
+                if (isValidUrl(url)) {
+                    fetch('/scrape', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: new URLSearchParams({ url: url }),
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            document.getElementById('result').innerHTML = data.title ? `<h2>${data.title}</h2>` : '<p>No title found or an error occurred.</p>';
+                        })
+                        .catch(error => {
+                            console.error('Error in fetch:', error);
+                            document.getElementById('result').innerHTML = '<p>Error: ' + (error.message || error.toString()) + '</p>';
+                        });
+                } else {
+                    throw new Error('Invalid URL entered');
+                }
+            } catch (error) {
+                console.error('Unexpected error:', error);
+                document.getElementById('result').innerHTML = '<p>Unexpected Error: ' + error.message + '</p>';
+            }
+        });
+    </script>
+</body>
+
+</html>

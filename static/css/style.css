@@ -1,0 +1,13 @@
+h1 {
+    text-align: center;
+    padding: 10px;
+}
+
+p {
+    text-align: center;
+}
+
+div {
+    border: 2px #eee solid;
+    color: brown;
+}
